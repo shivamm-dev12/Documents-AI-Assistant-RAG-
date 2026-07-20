@@ -1,0 +1,102 @@
+# ==========================
+# LLM
+# ==========================
+mistralai
+openai
+
+# ==========================
+# LangChain
+# ==========================
+langchain
+langchain-community
+langchain-core
+langchain-text-splitters
+langchain-mistralai
+langchain-huggingface
+langsmith
+
+# ==========================
+# Vector Databases
+# ==========================
+chromadb
+faiss-cpu
+
+# ==========================
+# Embedding Models
+# ==========================
+sentence-transformers
+transformers
+torch
+accelerate
+
+# ==========================
+# Document Loaders
+# ==========================
+pypdf
+pymupdf
+unstructured
+python-docx
+python-pptx
+openpyxl
+pandas
+tabulate
+
+# ==========================
+# OCR (Optional)
+# ==========================
+pytesseract
+Pillow
+
+# ==========================
+# HTML/Web Loading
+# ==========================
+beautifulsoup4
+lxml
+html5lib
+requests
+
+# ==========================
+# Token Counting
+# ==========================
+tiktoken
+
+# ==========================
+# Environment Variables
+# ==========================
+python-dotenv
+
+# ==========================
+# API
+# ==========================
+fastapi
+uvicorn
+
+# ==========================
+# UI (Optional)
+# ==========================
+streamlit
+
+# ==========================
+# Utilities
+# ==========================
+numpy
+scipy
+scikit-learn
+tqdm
+loguru
+
+# ==========================
+# Async
+# ==========================
+httpx
+aiofiles
+
+# ==========================
+# Validation
+# ==========================
+pydantic
+
+# ==========================
+# Optional Monitoring
+# ==========================
+rich
