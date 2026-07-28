@@ -4,6 +4,7 @@ import tempfile
 from create_database import create_vector_database
 from dotenv import load_dotenv
 from langchain_mistralai import ChatMistralAI
+import streamlit.components.v1 as components
 
 load_dotenv() 
 
@@ -24,11 +25,11 @@ hide_st_style = """
                 background-attachment: fixed !important; 
             }
             
-            /* SIDEBAR TRANSPARENT */
+            /* SIDEBAR RESPONSIVE & TRANSPARENT */
             [data-testid="stSidebar"] {
-                background-color: transparent !important;
+                background-color: rgba(12, 13, 18, 0.95) !important;
                 border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
-                padding-top: 2rem;
+                padding-top: 1rem;
             }
             
             [data-testid="stHeader"] {
@@ -46,33 +47,11 @@ hide_st_style = """
                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
                 font-weight: 600;
                 text-align: center; 
-                margin-bottom: 4rem; 
+                margin-bottom: 2rem; 
                 color: #E2E2E2;
             }
             
-            /* 🔥 SUBTLE GLOW FOR BUTTONS 🔥 */
-            div[data-testid="stHorizontalBlock"] button {
-                border-radius: 20px;
-                border: 1px solid #333;
-                background-color: #121319;
-                color: #ddd;
-                transition: all 0.3s ease;
-                padding: 10px 0px;
-                position: relative;
-            }
-            
-            div[data-testid="stHorizontalBlock"] button:hover,
-            div[data-testid="stHorizontalBlock"] button:active,
-            div[data-testid="stHorizontalBlock"] button:focus {
-                border: 1px solid transparent !important;
-                color: #fff !important;
-                background-clip: padding-box, border-box;
-                background-image: linear-gradient(#121319, #121319), linear-gradient(90deg, #b072ff, #20c997) !important;
-                box-shadow: -2px 0 8px -2px rgba(176, 114, 255, 0.2), 2px 0 8px -2px rgba(32, 201, 151, 0.2) !important;
-                outline: none !important;
-            }
-            
-            /* 🔥 SUBTLE GLOW FOR CHAT INPUT BAR 🔥 */
+            /* SUBTLE GLOW FOR CHAT INPUT BAR */
             [data-testid="stChatInput"] * {
                 border: none !important;
                 box-shadow: none !important;
@@ -95,24 +74,17 @@ hide_st_style = """
                 box-shadow: -2px 0 10px rgba(176, 114, 255, 0.2), 2px 0 10px rgba(32, 201, 151, 0.2) !important;
             }
 
-            .source-text {
-                font-size: 0.85rem;
-                color: #888;
-                margin-top: 10px;
-                font-style: italic;
-            }
-
-            /* UPLOADERS */
-            div[data-testid="stFileUploader"]:nth-of-type(1) [data-testid="stFileUploadDropzone"] {
-                border: 2px dashed #2196F3 !important;
-                background-color: rgba(33, 150, 243, 0.05) !important;
-                border-radius: 12px;
+            /* UPLOADER STYLING - NO BORDERS, CLEAN LOOK */
+            .docx-box, .pdf-box {
+                border: none !important;
+                background-color: transparent !important;
+                padding: 0px;
+                margin-bottom: 10px;
             }
             
-            div[data-testid="stFileUploader"]:nth-of-type(2) [data-testid="stFileUploadDropzone"] {
-                border: 2px dashed #F44336 !important;
-                background-color: rgba(244, 67, 54, 0.05) !important;
-                border-radius: 12px;
+            [data-testid="stFileUploader"] section {
+                background: transparent !important;
+                border: none !important;
             }
             </style>
             """
@@ -140,29 +112,23 @@ if "current_file" not in st.session_state:
     st.session_state.current_file = None
 
 # ==========================================
-# 3. SIDEBAR
+# 3. SIDEBAR (MOBILE FRIENDLY DOCUMENT MANAGER)
 # ==========================================
 with st.sidebar:
     st.markdown("## 📄 Document Manager")
-    st.write("") 
+    st.markdown("<p style='color: #888; font-size: 0.9rem; margin-top: -5px; margin-bottom: 15px;'>📁 Upload your documents</p>", unsafe_allow_html=True)
     
-    st.markdown("""
-        <div style="display: flex; align-items: center; margin-bottom: -15px;">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/f/fb/.docx_icon.svg" width="28" style="margin-right: 10px;">
-            <h4 style="margin: 0; color: #2196F3;">Upload DOCX</h4>
-        </div>
-    """, unsafe_allow_html=True)
-    docx_file = st.file_uploader("", type=["docx"], key="docx_uploader")
+    # --- DOCX SECTION (BLUE TEXT, NO BORDER) ---
+    st.markdown('<div class="docx-box">', unsafe_allow_html=True)
+    st.markdown("<p style='color: #2196F3; font-weight: 700; margin-bottom: -10px; font-size: 1rem;'>DOCX</p>", unsafe_allow_html=True)
+    docx_file = st.file_uploader("docx_up", type=["docx"], key="docx_uploader", label_visibility="collapsed")
+    st.markdown('</div>', unsafe_allow_html=True)
     
-    st.write("") 
-    
-    st.markdown("""
-        <div style="display: flex; align-items: center; margin-bottom: -15px;">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/8/87/PDF_file_icon.svg" width="28" style="margin-right: 10px;">
-            <h4 style="margin: 0; color: #F44336;">Upload PDF</h4>
-        </div>
-    """, unsafe_allow_html=True)
-    pdf_file = st.file_uploader("", type=["pdf"], key="pdf_uploader")
+    # --- PDF SECTION (RED TEXT, NO BORDER) ---
+    st.markdown('<div class="pdf-box">', unsafe_allow_html=True)
+    st.markdown("<p style='color: #F44336; font-weight: 700; margin-bottom: -10px; font-size: 1rem;'>PDF</p>", unsafe_allow_html=True)
+    pdf_file = st.file_uploader("pdf_up", type=["pdf"], key="pdf_uploader", label_visibility="collapsed")
+    st.markdown('</div>', unsafe_allow_html=True)
     
     uploaded_file = None
     if pdf_file:
@@ -206,25 +172,27 @@ with st.sidebar:
         st.rerun()
 
 # ==========================================
-# 4. MAIN CHAT
+# 4. CONDITIONAL TITLE (Gayab ho jayega message bhejte hi)
 # ==========================================
-st.markdown("<h2 class='main-title'>✨ Talk With Your Doc</h2>", unsafe_allow_html=True)
+title_placeholder = st.empty()
+
+if len(st.session_state.messages) <= 1 and st.session_state.current_file is None:
+    title_placeholder.markdown("<h1 class='main-title'>✨ Talk With Your Doc</h1>", unsafe_allow_html=True)
 
 # ----------------- QUICK ACTIONS -----------------
 quick_prompt = None
 
 if st.session_state.vectorstore is not None:
-    st.markdown("##### ⚡ Quick Actions (1-Click Generation)")
+    st.markdown("##### ⚡ Quick Actions")
     col1, col2, col3, col4 = st.columns(4)
-
     if col1.button("📄 Summary", use_container_width=True):
-        quick_prompt = "@summary Provide a detailed summary of this document."
+        quick_prompt = "@summary Provide a detailed summary."
     if col2.button("📝 Notes", use_container_width=True):
-        quick_prompt = "@notes Create detailed bullet-point notes from this document."
+        quick_prompt = "@notes Create detailed bullet-point notes."
     if col3.button("❓ MCQs", use_container_width=True):
-        quick_prompt = "@mcq Generate 5 multiple-choice questions based on the document."
+        quick_prompt = "@mcq Generate 5 MCQs."
     if col4.button("🌐 Translate", use_container_width=True):
-        quick_prompt = "@translate Translate the key points of this document into Hindi."
+        quick_prompt = "@translate Translate key points to Hindi."
     st.divider()
 
 # --- CHAT RENDERING ---
@@ -242,10 +210,27 @@ for message in st.session_state.messages:
         with st.chat_message("assistant", avatar="✨"):
             st.markdown(message["content"], unsafe_allow_html=True)
 
-user_input = st.chat_input("Ask a question, or type manually e.g. @mcq 10...")
+# 🚀 AUTO-SCROLL SCRIPT FOR CHAT
+components.html(
+    """
+    <script>
+        var body = window.parent.document.querySelector('.main');
+        if (body) {
+            body.scrollTop = body.scrollHeight;
+        }
+    </script>
+    """,
+    height=0,
+)
+
+# 🚀 CHAT INPUT BAR
+user_input = st.chat_input("Ask a question, or upload document from sidebar 📂")
 final_input = quick_prompt or user_input
 
 if final_input:
+    # Jaise hi message aaya, Title gayab!
+    title_placeholder.empty()
+    
     st.session_state.messages.append({"role": "user", "content": final_input})
     safe_input = final_input.replace('\n', '<br>')
     st.markdown(f"""
