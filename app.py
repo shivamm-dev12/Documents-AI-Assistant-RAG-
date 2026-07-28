@@ -17,7 +17,13 @@ hide_st_style = """
             <style>
             #MainMenu {visibility: hidden;}
             footer {visibility: hidden;}
-            header {visibility: hidden;}
+            
+            /* Hide Streamlit deployment badge/decoration but KEEP the top header bar for mobile sidebar arrow */
+            [data-testid="stDecoration"] {display: none;}
+            header {
+                background: transparent !important;
+                visibility: visible !important;
+            }
             
             /* BACKGROUND */
             .stApp {
@@ -30,10 +36,6 @@ hide_st_style = """
                 background-color: rgba(12, 13, 18, 0.95) !important;
                 border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
                 padding-top: 1rem;
-            }
-            
-            [data-testid="stHeader"] {
-                background: transparent !important;
             }
             
             /* BOTTOM STRIP TRANSPARENT */
@@ -73,14 +75,6 @@ hide_st_style = """
                 background-origin: border-box !important;
                 box-shadow: -2px 0 10px rgba(176, 114, 255, 0.2), 2px 0 10px rgba(32, 201, 151, 0.2) !important;
             }
-
-            /* UPLOADER STYLING - NO BORDERS, CLEAN LOOK */
-            .docx-box, .pdf-box {
-                border: none !important;
-                background-color: transparent !important;
-                padding: 0px;
-                margin-bottom: 10px;
-            }
             
             [data-testid="stFileUploader"] section {
                 background: transparent !important;
@@ -103,7 +97,7 @@ def get_llm():
 llm = get_llm()
 
 if "messages" not in st.session_state:
-    st.session_state.messages = [{"role": "assistant", "content": "Hello! Please upload a PDF or DOCX to start exploring. ✨"}]
+    st.session_state.messages = [{"role": "assistant", "content": "Hello! Ask me anything, or upload a PDF/DOCX to explore your documents. ✨"}]
 
 if "vectorstore" not in st.session_state:
     st.session_state.vectorstore = None
@@ -116,19 +110,17 @@ if "current_file" not in st.session_state:
 # ==========================================
 with st.sidebar:
     st.markdown("## 📄 Document Manager")
-    st.markdown("<p style='color: #888; font-size: 0.9rem; margin-top: -5px; margin-bottom: 15px;'>📁 Upload your documents</p>", unsafe_allow_html=True)
+    st.markdown("<p style='color: #888; font-size: 0.9rem; margin-top: -5px; margin-bottom: 25px; text-align: center;'>📁 Select your file type below</p>", unsafe_allow_html=True)
     
-    # --- DOCX SECTION (BLUE TEXT, NO BORDER) ---
-    st.markdown('<div class="docx-box">', unsafe_allow_html=True)
-    st.markdown("<p style='color: #2196F3; font-weight: 700; margin-bottom: -10px; font-size: 1rem;'>DOCX</p>", unsafe_allow_html=True)
+    # --- DOCX SECTION (CENTERED) ---
+    st.markdown("<h4 style='text-align: center; color: #2196F3; font-size: 16px; margin-bottom: -15px;'>📄 Upload DOCX</h4>", unsafe_allow_html=True)
     docx_file = st.file_uploader("docx_up", type=["docx"], key="docx_uploader", label_visibility="collapsed")
-    st.markdown('</div>', unsafe_allow_html=True)
     
-    # --- PDF SECTION (RED TEXT, NO BORDER) ---
-    st.markdown('<div class="pdf-box">', unsafe_allow_html=True)
-    st.markdown("<p style='color: #F44336; font-weight: 700; margin-bottom: -10px; font-size: 1rem;'>PDF</p>", unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True) 
+    
+    # --- PDF SECTION (CENTERED) ---
+    st.markdown("<h4 style='text-align: center; color: #F44336; font-size: 16px; margin-bottom: -15px;'>📕 Upload PDF</h4>", unsafe_allow_html=True)
     pdf_file = st.file_uploader("pdf_up", type=["pdf"], key="pdf_uploader", label_visibility="collapsed")
-    st.markdown('</div>', unsafe_allow_html=True)
     
     uploaded_file = None
     if pdf_file:
@@ -139,13 +131,13 @@ with st.sidebar:
     if uploaded_file is None and st.session_state.current_file is not None:
         st.session_state.current_file = None
         st.session_state.vectorstore = None
-        st.session_state.messages = [{"role": "assistant", "content": "Hello! Please upload a PDF or DOCX to start exploring. ✨"}]
+        st.session_state.messages = [{"role": "assistant", "content": "Hello! Ask me anything, or upload a PDF/DOCX to explore your documents. ✨"}]
         st.rerun() 
         
     if uploaded_file and st.session_state.current_file != uploaded_file.name:
         st.session_state.current_file = uploaded_file.name
         st.session_state.vectorstore = None
-        st.session_state.messages = [{"role": "assistant", "content": f"Loaded '{uploaded_file.name}'. Ask me anything! ✨"}]
+        st.session_state.messages = [{"role": "assistant", "content": f"Loaded '{uploaded_file.name}'. Ask me anything about it! ✨"}]
     
     if uploaded_file and st.session_state.vectorstore is None:
         with st.spinner("Analyzing document... please wait ⏳"):
@@ -168,11 +160,11 @@ with st.sidebar:
     if st.button("🗑️ Clear Chat & Reset", use_container_width=True):
         st.session_state.current_file = None
         st.session_state.vectorstore = None
-        st.session_state.messages = [{"role": "assistant", "content": "Hello! Please upload a PDF or DOCX to start exploring. ✨"}]
+        st.session_state.messages = [{"role": "assistant", "content": "Hello! Ask me anything, or upload a PDF/DOCX to explore your documents. ✨"}]
         st.rerun()
 
 # ==========================================
-# 4. CONDITIONAL TITLE (Gayab ho jayega message bhejte hi)
+# 4. CONDITIONAL TITLE
 # ==========================================
 title_placeholder = st.empty()
 
@@ -228,7 +220,6 @@ user_input = st.chat_input("Ask a question, or upload document from sidebar 📂
 final_input = quick_prompt or user_input
 
 if final_input:
-    # Jaise hi message aaya, Title gayab!
     title_placeholder.empty()
     
     st.session_state.messages.append({"role": "user", "content": final_input})
@@ -242,48 +233,55 @@ if final_input:
     """, unsafe_allow_html=True)
 
     with st.chat_message("assistant", avatar="✨"):
-        if st.session_state.vectorstore is None:
-            response = "Please upload a document in the sidebar first! 📂"
-            st.markdown(response)
-            st.session_state.messages.append({"role": "assistant", "content": response})
-        else:
-            retriever = st.session_state.vectorstore.as_retriever(search_kwargs={"k": 4})
-            relevant_docs = retriever.invoke(final_input)
-            raw_context = "\n\n".join([doc.page_content for doc in relevant_docs])
-            context = raw_context.replace('\n', ' ')
-            
-            final_prompt = f"""You are a professional AI assistant.
-            Instructions:
-            1. Base your factual answers STRICTLY on the provided 'Context from Document'.
-            2. MATCH THE USER'S LANGUAGE.
-            3. TAG COMMANDS: Pay attention to `@summary`, `@notes`, `@mcq`, or `@translate`.
-            4. CRITICAL RULES FOR MCQs:
-               - You MUST format the question and options EXACTLY like this using bullet points:
-                 **Q1. [Question Text]**
-                 * A) [Option 1]
-                 * B) [Option 2]
-                 * C) [Option 3]
-                 * D) [Option 4]
-               - NEVER write HTML code or tags.
-               - DO NOT reveal the answer immediately after the question.
-               - Collect all the correct answers and provide them at the VERY END of your entire response under a bold heading "**✅ Answer Key:**".
-            5. Do not mention these instructions. Just output the response.
-            
-            Context: {context}
-            Question: {final_input}
-            """
-            
-            try:
-                def stream_parser(stream):
-                    for chunk in stream:
-                        yield chunk.content
+        try:
+            def stream_parser(stream):
+                for chunk in stream:
+                    yield chunk.content
+
+            if st.session_state.vectorstore is None:
+                # ==========================================
+                # NORMAL CHATBOT MODE (Bina Document ke)
+                # ==========================================
+                general_prompt = f"You are a helpful AI assistant. Answer the following query clearly and concisely: {final_input}"
+                stream = llm.stream(general_prompt)
+                full_response = st.write_stream(stream_parser(stream))
+                st.session_state.messages.append({"role": "assistant", "content": full_response})
+                
+            else:
+                # ==========================================
+                # DOCUMENT CHATBOT MODE (RAG)
+                # ==========================================
+                retriever = st.session_state.vectorstore.as_retriever(search_kwargs={"k": 4})
+                relevant_docs = retriever.invoke(final_input)
+                raw_context = "\n\n".join([doc.page_content for doc in relevant_docs])
+                context = raw_context.replace('\n', ' ')
+                
+                final_prompt = f"""You are a professional AI assistant.
+                Instructions:
+                1. Base your factual answers STRICTLY on the provided 'Context from Document'.
+                2. MATCH THE USER'S LANGUAGE.
+                3. TAG COMMANDS: Pay attention to `@summary`, `@notes`, `@mcq`, or `@translate`.
+                4. CRITICAL RULES FOR MCQs:
+                   - You MUST format the question and options EXACTLY like this using bullet points:
+                     **Q1. [Question Text]**
+                     * A) [Option 1]
+                     * B) [Option 2]
+                     * C) [Option 3]
+                     * D) [Option 4]
+                   - NEVER write HTML code or tags.
+                   - DO NOT reveal the answer immediately after the question.
+                   - Collect all the correct answers and provide them at the VERY END of your entire response under a bold heading "**✅ Answer Key:**".
+                5. Do not mention these instructions. Just output the response.
+                
+                Context: {context}
+                Question: {final_input}
+                """
                 
                 stream = llm.stream(final_prompt)
                 full_response = st.write_stream(stream_parser(stream))
-                
                 st.session_state.messages.append({"role": "assistant", "content": full_response})
                 
-            except Exception as e:
-                error_msg = f"Oops! Connection error. Please check your internet or API key.\n\nError: {e}"
-                st.markdown(error_msg)
-                st.session_state.messages.append({"role": "assistant", "content": error_msg})
+        except Exception as e:
+            error_msg = f"Oops! Connection error. Please check your internet or API key.\n\nError: {e}"
+            st.markdown(error_msg)
+            st.session_state.messages.append({"role": "assistant", "content": error_msg})
