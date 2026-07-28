@@ -25,17 +25,19 @@ hide_st_style = """
                 visibility: visible !important;
             }
             
-            /* BACKGROUND */
+            /* BACKGROUND - SEAMLESS FOR WHOLE APP */
             .stApp {
                 background: radial-gradient(circle at 15% 30%, #172a21 0%, #0a0b10 40%, #000000 100%) !important;
                 background-attachment: fixed !important; 
             }
             
-            /* SIDEBAR RESPONSIVE & TRANSPARENT */
-            [data-testid="stSidebar"] {
-                background-color: rgba(12, 13, 18, 0.95) !important;
-                border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
-                padding-top: 1rem;
+            /* 🔥 FIX 1: MAKE SIDEBAR 100% TRANSPARENT TO MATCH THEME 🔥 */
+            [data-testid="stSidebar"], 
+            [data-testid="stSidebar"] > div:first-child,
+            section[data-testid="stSidebar"] {
+                background-color: transparent !important;
+                background: transparent !important;
+                border-right: 1px solid rgba(255, 255, 255, 0.08) !important; /* Subtle divider line */
             }
             
             /* BOTTOM STRIP TRANSPARENT */
@@ -53,19 +55,29 @@ hide_st_style = """
                 color: #E2E2E2;
             }
             
-            /* SUBTLE GLOW FOR CHAT INPUT BAR */
+            /* 🔥 FIX 2: PERMANENT & TYPING GLOW EFFECT FOR CHAT BAR 🔥 */
             [data-testid="stChatInput"] * {
                 border: none !important;
                 box-shadow: none !important;
                 outline: none !important;
             }
             
-            [data-testid="stChatInput"] {
+            [data-testid="stChatInput"] > div {
                 border-radius: 16px !important;
                 background-color: #121319 !important;
-                border: 1.5px solid #333 !important;
-                color: white !important;
+                /* Beautiful Gradient Border */
+                border: 2px solid transparent !important;
+                background-clip: padding-box, border-box !important;
+                background-image: linear-gradient(#121319, #121319), linear-gradient(90deg, #b072ff, #20c997) !important;
+                background-origin: border-box !important;
+                /* Permanent subtle glow */
+                box-shadow: -2px 0 15px rgba(176, 114, 255, 0.3), 2px 0 15px rgba(32, 201, 151, 0.3) !important;
                 transition: all 0.3s ease;
+            }
+            
+            /* Strong glow when user is typing */
+            [data-testid="stChatInput"] > div:focus-within {
+                box-shadow: -2px 0 25px rgba(176, 114, 255, 0.7), 2px 0 25px rgba(32, 201, 151, 0.7) !important;
             }
             
             /* 🔥 MAGIC CSS FOR CENTERING UPLOADER 🔥 */
@@ -181,9 +193,7 @@ with st.sidebar:
 # ==========================================
 title_placeholder = st.empty()
 
-# Ye block sirf tab run hoga jab chat khali ho
 if len(st.session_state.messages) <= 1 and st.session_state.current_file is None:
-    # Title aur Mobile Tooltip dono ek sath inject karenge
     title_placeholder.markdown("""
         <h1 class='main-title'>✨ Talk With Your Doc</h1>
         <style>
@@ -256,7 +266,6 @@ user_input = st.chat_input("Ask a question, or upload document from sidebar 📂
 final_input = quick_prompt or user_input
 
 if final_input:
-    # JAISE HI USER MESSAGE BHEJEGA, TITLE AUR TOOLTIP DONO GAYAB HO JAYENGE!
     title_placeholder.empty()
     
     st.session_state.messages.append({"role": "user", "content": final_input})
