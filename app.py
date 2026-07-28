@@ -90,22 +90,6 @@ hide_st_style = """
                 align-items: center !important;
                 justify-content: center !important;
             }
-
-            /* 📱 100% SAFE MOBILE ONLY TOOLTIP VIA CSS ::after 📱 */
-            @media (max-width: 768px) {
-                header::after {
-                    content: "👈 Click to upload doc";
-                    position: fixed;
-                    top: 18px;
-                    left: 50px;
-                    color: #20c997;
-                    font-size: 13px;
-                    font-weight: bold;
-                    letter-spacing: 0.5px;
-                    z-index: 999999;
-                    pointer-events: none;
-                }
-            }
             </style>
             """
 st.markdown(hide_st_style, unsafe_allow_html=True)
@@ -122,7 +106,7 @@ def get_llm():
 
 llm = get_llm()
 
-# --- CLEAN WELCOME MESSAGE (NO INSTRUCTIONS) ---
+# --- CLEAN WELCOME MESSAGE ---
 welcome_msg = "Hello! Ask me anything, or upload a PDF/DOCX to explore your documents. ✨"
 
 if "messages" not in st.session_state:
@@ -193,12 +177,35 @@ with st.sidebar:
         st.rerun()
 
 # ==========================================
-# 4. CONDITIONAL TITLE
+# 4. CONDITIONAL TITLE & DYNAMIC MOBILE HINT
 # ==========================================
 title_placeholder = st.empty()
 
+# Ye block sirf tab run hoga jab chat khali ho
 if len(st.session_state.messages) <= 1 and st.session_state.current_file is None:
-    title_placeholder.markdown("<h1 class='main-title'>✨ Talk With Your Doc</h1>", unsafe_allow_html=True)
+    # Title aur Mobile Tooltip dono ek sath inject karenge
+    title_placeholder.markdown("""
+        <h1 class='main-title'>✨ Talk With Your Doc</h1>
+        <style>
+        @media (max-width: 768px) {
+            header::after {
+                content: "👈 Upload doc";
+                position: fixed;
+                top: 14px;
+                left: 55px;
+                color: rgba(255, 255, 255, 0.7);
+                font-size: 11px;
+                font-weight: 500;
+                background-color: rgba(255, 255, 255, 0.08);
+                padding: 4px 10px;
+                border-radius: 12px;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                z-index: 999999;
+                pointer-events: none;
+            }
+        }
+        </style>
+    """, unsafe_allow_html=True)
 
 # ----------------- QUICK ACTIONS -----------------
 quick_prompt = None
@@ -249,6 +256,7 @@ user_input = st.chat_input("Ask a question, or upload document from sidebar 📂
 final_input = quick_prompt or user_input
 
 if final_input:
+    # JAISE HI USER MESSAGE BHEJEGA, TITLE AUR TOOLTIP DONO GAYAB HO JAYENGE!
     title_placeholder.empty()
     
     st.session_state.messages.append({"role": "user", "content": final_input})
@@ -268,18 +276,14 @@ if final_input:
                     yield chunk.content
 
             if st.session_state.vectorstore is None:
-                # ==========================================
                 # NORMAL CHATBOT MODE
-                # ==========================================
                 general_prompt = f"You are a helpful AI assistant. Answer the following query clearly and concisely: {final_input}"
                 stream = llm.stream(general_prompt)
                 full_response = st.write_stream(stream_parser(stream))
                 st.session_state.messages.append({"role": "assistant", "content": full_response})
                 
             else:
-                # ==========================================
                 # DOCUMENT CHATBOT MODE (RAG)
-                # ==========================================
                 retriever = st.session_state.vectorstore.as_retriever(search_kwargs={"k": 4})
                 relevant_docs = retriever.invoke(final_input)
                 raw_context = "\n\n".join([doc.page_content for doc in relevant_docs])
