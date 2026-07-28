@@ -76,7 +76,13 @@ hide_st_style = """
                 box-shadow: -2px 0 10px rgba(176, 114, 255, 0.2), 2px 0 10px rgba(32, 201, 151, 0.2) !important;
             }
             
-            /* 🔥 MAGIC CSS FOR CENTERING UPLOAD BUTTONS 🔥 */
+            /* 🔥 MAGIC CSS FOR CENTERING EVERYTHING IN UPLOADER 🔥 */
+            [data-testid="stFileUploader"] {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
             [data-testid="stFileUploader"] section {
                 background: transparent !important;
                 border: none !important;
@@ -84,10 +90,13 @@ hide_st_style = """
                 flex-direction: column !important;
                 align-items: center !important;
                 justify-content: center !important;
+                width: 100% !important;
             }
-            
+            [data-testid="stFileUploader"] div, 
             [data-testid="stFileUploader"] small {
                 text-align: center !important;
+                align-items: center !important;
+                justify-content: center !important;
             }
             </style>
             """
@@ -105,8 +114,14 @@ def get_llm():
 
 llm = get_llm()
 
+# --- MOBILE INSTRUCTION ADDED HERE ---
+welcome_msg = (
+    "Hello! Ask me anything, or upload a PDF/DOCX to explore your documents. ✨<br><br>"
+    "<span style='color: #a0a0a0; font-size: 0.85rem;'>📱 <i><b>Mobile Users:</b> Tap the <b>&gt;</b> arrow at the top-left to open the Document Manager.</i></span>"
+)
+
 if "messages" not in st.session_state:
-    st.session_state.messages = [{"role": "assistant", "content": "Hello! Ask me anything, or upload a PDF/DOCX to explore your documents. ✨"}]
+    st.session_state.messages = [{"role": "assistant", "content": welcome_msg}]
 
 if "vectorstore" not in st.session_state:
     st.session_state.vectorstore = None
@@ -140,7 +155,7 @@ with st.sidebar:
     if uploaded_file is None and st.session_state.current_file is not None:
         st.session_state.current_file = None
         st.session_state.vectorstore = None
-        st.session_state.messages = [{"role": "assistant", "content": "Hello! Ask me anything, or upload a PDF/DOCX to explore your documents. ✨"}]
+        st.session_state.messages = [{"role": "assistant", "content": welcome_msg}]
         st.rerun() 
         
     if uploaded_file and st.session_state.current_file != uploaded_file.name:
@@ -169,7 +184,7 @@ with st.sidebar:
     if st.button("🗑️ Clear Chat & Reset", use_container_width=True):
         st.session_state.current_file = None
         st.session_state.vectorstore = None
-        st.session_state.messages = [{"role": "assistant", "content": "Hello! Ask me anything, or upload a PDF/DOCX to explore your documents. ✨"}]
+        st.session_state.messages = [{"role": "assistant", "content": welcome_msg}]
         st.rerun()
 
 # ==========================================
@@ -249,7 +264,7 @@ if final_input:
 
             if st.session_state.vectorstore is None:
                 # ==========================================
-                # NORMAL CHATBOT MODE (Bina Document ke)
+                # NORMAL CHATBOT MODE
                 # ==========================================
                 general_prompt = f"You are a helpful AI assistant. Answer the following query clearly and concisely: {final_input}"
                 stream = llm.stream(general_prompt)
