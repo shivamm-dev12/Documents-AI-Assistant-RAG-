@@ -96,7 +96,7 @@ hide_st_style = """
                 box-shadow: -2px 0 25px rgba(176, 114, 255, 0.7), 2px 0 25px rgba(32, 201, 151, 0.7) !important;
             }
             
-            /* 🔥 MAGIC CSS FOR CENTERING UPLOADER 🔥 */
+            /* 🔥 MAGIC CSS FOR CENTERING UPLOADER (SUPPORTS DRAG & DROP) 🔥 */
             [data-testid="stFileUploader"] {
                 display: flex !important;
                 flex-direction: column !important;
@@ -111,6 +111,7 @@ hide_st_style = """
                 align-items: center !important;
                 justify-content: center !important;
                 width: 100% !important;
+                cursor: pointer; /* Makes it feel more clickable/draggable */
             }
             [data-testid="stFileUploader"] div, 
             [data-testid="stFileUploader"] small {
