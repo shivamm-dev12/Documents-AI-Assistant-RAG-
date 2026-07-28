@@ -76,9 +76,18 @@ hide_st_style = """
                 box-shadow: -2px 0 10px rgba(176, 114, 255, 0.2), 2px 0 10px rgba(32, 201, 151, 0.2) !important;
             }
             
+            /* 🔥 MAGIC CSS FOR CENTERING UPLOAD BUTTONS 🔥 */
             [data-testid="stFileUploader"] section {
                 background: transparent !important;
                 border: none !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
+            
+            [data-testid="stFileUploader"] small {
+                text-align: center !important;
             }
             </style>
             """
