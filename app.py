@@ -31,13 +31,24 @@ hide_st_style = """
                 background-attachment: fixed !important; 
             }
             
-            /* 🔥 FIX 1: MAKE SIDEBAR 100% TRANSPARENT TO MATCH THEME 🔥 */
+            /* 🔥 FIX 1: SIDEBAR BACKGROUND 🔥 
+               - Transparent on PC to match theme
+               - Solid on Mobile to prevent text overlap */
             [data-testid="stSidebar"], 
             [data-testid="stSidebar"] > div:first-child,
             section[data-testid="stSidebar"] {
                 background-color: transparent !important;
                 background: transparent !important;
-                border-right: 1px solid rgba(255, 255, 255, 0.08) !important; /* Subtle divider line */
+                border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+            }
+            
+            @media (max-width: 768px) {
+                [data-testid="stSidebar"], 
+                [data-testid="stSidebar"] > div:first-child,
+                section[data-testid="stSidebar"] {
+                    background-color: #0d1117 !important; /* Solid dark background for phone */
+                    background: #0d1117 !important;
+                }
             }
             
             /* BOTTOM STRIP TRANSPARENT */
@@ -55,27 +66,32 @@ hide_st_style = """
                 color: #E2E2E2;
             }
             
-            /* 🔥 FIX 2: PERMANENT & TYPING GLOW EFFECT FOR CHAT BAR 🔥 */
+            /* 🔥 FIX 2: CHAT INPUT BAR HEIGHT & GLOW 🔥 */
             [data-testid="stChatInput"] * {
                 border: none !important;
                 box-shadow: none !important;
                 outline: none !important;
             }
             
+            /* Restrict height to prevent it from being too big on load */
+            [data-testid="stChatInput"] {
+                min-height: 50px !important; 
+                max-height: 150px !important;
+                padding-bottom: 5px !important;
+            }
+            
             [data-testid="stChatInput"] > div {
                 border-radius: 16px !important;
                 background-color: #121319 !important;
-                /* Beautiful Gradient Border */
                 border: 2px solid transparent !important;
                 background-clip: padding-box, border-box !important;
                 background-image: linear-gradient(#121319, #121319), linear-gradient(90deg, #b072ff, #20c997) !important;
                 background-origin: border-box !important;
-                /* Permanent subtle glow */
                 box-shadow: -2px 0 15px rgba(176, 114, 255, 0.3), 2px 0 15px rgba(32, 201, 151, 0.3) !important;
                 transition: all 0.3s ease;
+                min-height: 45px !important; /* Force sensible initial height */
             }
             
-            /* Strong glow when user is typing */
             [data-testid="stChatInput"] > div:focus-within {
                 box-shadow: -2px 0 25px rgba(176, 114, 255, 0.7), 2px 0 25px rgba(32, 201, 151, 0.7) !important;
             }
