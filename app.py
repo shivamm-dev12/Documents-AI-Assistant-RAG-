@@ -31,9 +31,27 @@ hide_st_style = """
                 background-attachment: fixed !important; 
             }
             
-            /* 🔥 FIX 1: SIDEBAR BACKGROUND 🔥 
-               - Transparent on PC to match theme
-               - Solid on Mobile to prevent text overlap */
+            /* 🔥 FIX 3: FORCE WHITE TEXT EVERYWHERE (KILLS THE LIGHT MODE BUG) 🔥 */
+            .stApp, .stApp p, .stApp span, .stApp h1, .stApp h2, .stApp h3, .stApp h4, .stApp h5, .stApp h6, .stApp label, .stMarkdown {
+                color: #FAFAFA !important;
+            }
+            
+            /* Force Chat Input Text and Placeholder Color */
+            [data-testid="stChatInput"] textarea {
+                color: #ffffff !important;
+                -webkit-text-fill-color: #ffffff !important;
+            }
+            [data-testid="stChatInput"] textarea::placeholder {
+                color: #a0a0a0 !important;
+                -webkit-text-fill-color: #a0a0a0 !important;
+            }
+            
+            /* Force Sidebar Text Color */
+            [data-testid="stSidebar"] * {
+                color: #FAFAFA !important;
+            }
+            
+            /* 🔥 FIX 1: SIDEBAR BACKGROUND 🔥 */
             [data-testid="stSidebar"], 
             [data-testid="stSidebar"] > div:first-child,
             section[data-testid="stSidebar"] {
@@ -46,7 +64,7 @@ hide_st_style = """
                 [data-testid="stSidebar"], 
                 [data-testid="stSidebar"] > div:first-child,
                 section[data-testid="stSidebar"] {
-                    background-color: #0d1117 !important; /* Solid dark background for phone */
+                    background-color: #0d1117 !important; 
                     background: #0d1117 !important;
                 }
             }
@@ -63,7 +81,7 @@ hide_st_style = """
                 font-weight: 600;
                 text-align: center; 
                 margin-bottom: 2rem; 
-                color: #E2E2E2;
+                color: #E2E2E2 !important;
             }
             
             /* 🔥 FIX 2: CHAT INPUT BAR HEIGHT & GLOW 🔥 */
@@ -73,7 +91,6 @@ hide_st_style = """
                 outline: none !important;
             }
             
-            /* Restrict height to prevent it from being too big on load */
             [data-testid="stChatInput"] {
                 min-height: 50px !important; 
                 max-height: 150px !important;
@@ -89,7 +106,7 @@ hide_st_style = """
                 background-origin: border-box !important;
                 box-shadow: -2px 0 15px rgba(176, 114, 255, 0.3), 2px 0 15px rgba(32, 201, 151, 0.3) !important;
                 transition: all 0.3s ease;
-                min-height: 45px !important; /* Force sensible initial height */
+                min-height: 45px !important; 
             }
             
             [data-testid="stChatInput"] > div:focus-within {
@@ -111,7 +128,7 @@ hide_st_style = """
                 align-items: center !important;
                 justify-content: center !important;
                 width: 100% !important;
-                cursor: pointer; /* Makes it feel more clickable/draggable */
+                cursor: pointer; 
             }
             [data-testid="stFileUploader"] div, 
             [data-testid="stFileUploader"] small {
@@ -220,7 +237,7 @@ if len(st.session_state.messages) <= 1 and st.session_state.current_file is None
                 position: fixed;
                 top: 14px;
                 left: 55px;
-                color: rgba(255, 255, 255, 0.7);
+                color: rgba(255, 255, 255, 0.7) !important;
                 font-size: 11px;
                 font-weight: 500;
                 background-color: rgba(255, 255, 255, 0.08);
@@ -256,7 +273,7 @@ for message in st.session_state.messages:
         safe_text = message["content"].replace('\n', '<br>')
         st.markdown(f"""
         <div style="display: flex; justify-content: flex-end; margin-bottom: 15px;">
-            <div style="background: linear-gradient(135deg, rgba(176, 114, 255, 0.1) 0%, rgba(32, 201, 151, 0.1) 100%); color: #FAFAFA; padding: 12px 20px; border-radius: 20px; max-width: 70%; font-size: 15px; border: 1px solid rgba(255,255,255,0.08); box-shadow: -1px 1px 6px rgba(176, 114, 255, 0.05), 1px -1px 6px rgba(32, 201, 151, 0.05); line-height: 1.5;">
+            <div style="background: linear-gradient(135deg, rgba(176, 114, 255, 0.1) 0%, rgba(32, 201, 151, 0.1) 100%); color: #FAFAFA !important; padding: 12px 20px; border-radius: 20px; max-width: 70%; font-size: 15px; border: 1px solid rgba(255,255,255,0.08); box-shadow: -1px 1px 6px rgba(176, 114, 255, 0.05), 1px -1px 6px rgba(32, 201, 151, 0.05); line-height: 1.5;">
                 {safe_text}
             </div>
         </div>
@@ -289,7 +306,7 @@ if final_input:
     safe_input = final_input.replace('\n', '<br>')
     st.markdown(f"""
     <div style="display: flex; justify-content: flex-end; margin-bottom: 15px;">
-        <div style="background: linear-gradient(135deg, rgba(176, 114, 255, 0.1) 0%, rgba(32, 201, 151, 0.1) 100%); color: #FAFAFA; padding: 12px 20px; border-radius: 20px; max-width: 70%; font-size: 15px; border: 1px solid rgba(255,255,255,0.08); box-shadow: -1px 1px 6px rgba(176, 114, 255, 0.05), 1px -1px 6px rgba(32, 201, 151, 0.05); line-height: 1.5;">
+        <div style="background: linear-gradient(135deg, rgba(176, 114, 255, 0.1) 0%, rgba(32, 201, 151, 0.1) 100%); color: #FAFAFA !important; padding: 12px 20px; border-radius: 20px; max-width: 70%; font-size: 15px; border: 1px solid rgba(255,255,255,0.08); box-shadow: -1px 1px 6px rgba(176, 114, 255, 0.05), 1px -1px 6px rgba(32, 201, 151, 0.05); line-height: 1.5;">
             {safe_input}
         </div>
     </div>
